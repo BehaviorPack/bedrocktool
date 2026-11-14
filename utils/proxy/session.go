@@ -157,19 +157,6 @@ func (s *Session) resolveServerName(ctx context.Context) error {
 	return nil
 }
 
-// ServerAddress is the address given to connect to a server, or "" when
-// connecting some other way (realm, replay...).
-func (s *Session) ServerAddress() string {
-	if s.connectInfo == nil {
-		return ""
-	}
-	parsed, err := s.connectInfo.Parsed()
-	if err != nil || parsed.Kind != connectinfo.KindServer {
-		return ""
-	}
-	return parsed.Address
-}
-
 // p2pJoinTimeout is how long a friend's world gets to let us in. Joining
 // waits for the host to hand out a nonce; a host that never does (it left,
 // or closed the world to friends meanwhile) used to leave the GUI at

@@ -51,7 +51,10 @@ type World struct {
 	ChunkFunc func(pos world.ChunkPos, ch *chunk.Chunk)
 
 	BlockRegistry world.BlockRegistry
-	BiomeRegistry *world.BiomeRegistry
+	// AddedBlockStates is the states the behavior pack gives blocks on top
+	// of the server's, saved with each such block (see withAddedStates).
+	AddedBlockStates map[string]map[string]any
+	BiomeRegistry    *world.BiomeRegistry
 
 	dimension            world.Dimension
 	dimRange             cube.Range
@@ -155,7 +158,7 @@ func (w *World) storeMemToProvider() error {
 			LDBOptions: &opt.Options{
 				Compression: opt.DefaultCompression,
 			},
-			Blocks: w.BlockRegistry,
+			Blocks: withAddedStates(w.BlockRegistry, w.AddedBlockStates),
 		}.Open(w.Folder)
 		if err != nil {
 			return err
@@ -499,7 +502,7 @@ func (w *World) Rename(name, folder string) error {
 			LDBOptions: &opt.Options{
 				Compression: opt.DefaultCompression,
 			},
-			Blocks: w.BlockRegistry,
+			Blocks: withAddedStates(w.BlockRegistry, w.AddedBlockStates),
 		}.Open(folder)
 		if err != nil {
 			return err
@@ -831,6 +834,10 @@ func (w *World) finalizeProvider(
 	}
 
 	applyGenerator(ld, w.Generator)
+	if w.Generator == GeneratorVoid {
+		// No mobs spawning into a void world, whatever the server had.
+		ld.DoMobSpawning = false
+	}
 
 	ld.RandomTickSpeed = 0
 	s.CurrentTick = gd.Time
@@ -841,9 +848,6 @@ func (w *World) finalizeProvider(
 		s.Time += ticksSince
 		s.TimeCycle = true
 	}
-
-	// No mobs spawning into a saved map, whatever the server had.
-	ld.DoMobSpawning = false
 
 	if experimental {
 		if ld.Experiments == nil {
