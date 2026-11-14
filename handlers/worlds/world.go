@@ -7,6 +7,7 @@ import (
 	"image/png"
 	"maps"
 	"os"
+	"path/filepath"
 	"slices"
 	"strings"
 	"sync"
@@ -362,9 +363,9 @@ func (w *worldsHandler) SaveAndReset(end bool, dim world.Dimension) {
 	if len(worldState.StoredChunks) > 0 {
 		// save image of the map
 		if w.settings.SaveImage {
-			f, _ := os.Create(worldState.Folder + ".png")
-			png.Encode(f, w.mapUI.ToImage())
-			f.Close()
+			if err := w.saveMapImage(worldState.Folder + ".png"); err != nil {
+				w.log.Errorf("map image: %s", err)
+			}
 		}
 
 		// reset map, increase counter for
@@ -558,4 +559,25 @@ func (w *worldsHandler) entityInfo(rid uint64) (typeID, nameTag string, ok bool)
 		})
 	})
 	return
+}
+
+// saveMapImage writes the in-game map of the world being saved as a PNG.
+func (w *worldsHandler) saveMapImage(filename string) error {
+	img := w.mapUI.ToImage()
+	if img == nil {
+		return fmt.Errorf("no map image for %s", filename)
+	}
+	// The first worlds are saved before anything else made their folder.
+	if err := os.MkdirAll(filepath.Dir(filename), 0o777); err != nil {
+		return err
+	}
+	f, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
+	if err := png.Encode(f, img); err != nil {
+		f.Close()
+		return err
+	}
+	return f.Close()
 }
