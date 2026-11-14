@@ -3,6 +3,8 @@ package behaviourpack
 import (
 	"encoding/json"
 	"reflect"
+	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/sandertv/gophertunnel/minecraft/protocol"
@@ -182,5 +184,83 @@ func TestCardinalRotationSkipped(t *testing.T) {
 				t.Errorf("states added: %v", bp.AddedBlockStates())
 			}
 		})
+	}
+}
+
+// facingPerms is Hive's custom:facing_direction permutations, a rotation
+// for each value.
+func facingPerms(rotations map[int][3]int32) []any {
+	var perms []any
+	for v, r := range rotations {
+		perms = append(perms, map[string]any{
+			"condition": "query.block_property('custom:facing_direction') == " + strconv.Itoa(v),
+			"components": map[string]any{
+				"minecraft:geometry":       map[string]any{"identifier": "geometry.thing"},
+				"minecraft:transformation": map[string]any{"RX": r[0], "RY": r[1], "RZ": r[2]},
+			},
+		})
+	}
+	return perms
+}
+
+func TestPlaceRotation(t *testing.T) {
+	bp := New("test")
+	// As Hive's founder_ad:elderspore_mature: 0, 180, 90, 270 degrees about Y.
+	bp.AddBlock(protocol.BlockEntry{Name: "test:spore", Properties: map[string]any{
+		"properties":   []any{map[string]any{"name": "custom:facing_direction", "enum": []int32{0, 1, 2, 3}}},
+		"permutations": facingPerms(map[int][3]int32{0: {0, 0, 0}, 1: {0, 2, 0}, 2: {0, 1, 0}, 3: {0, 3, 0}}),
+	}})
+	// A pillar: Y, turned about X (along Z), turned about Z (along X).
+	bp.AddBlock(protocol.BlockEntry{Name: "test:pillar", Properties: map[string]any{
+		"properties":   []any{map[string]any{"name": "custom:facing_direction", "enum": []int32{0, 1, 2}}},
+		"permutations": facingPerms(map[int][3]int32{0: {0, 0, 0}, 1: {1, 0, 0}, 2: {0, 0, 1}}),
+	}})
+
+	want := map[string]*placeRotation{
+		"test:spore":  {State: "custom:facing_direction", Yaw: map[string]int{"0": 0, "180": 1, "90": 2, "270": 3}},
+		"test:pillar": {State: "custom:facing_direction", Axis: map[string]int{"y": 0, "z": 1, "x": 2}},
+	}
+	if !reflect.DeepEqual(bp.placeRotations, want) {
+		t.Errorf("placeRotations = %+v, want %+v", bp.placeRotations, want)
+	}
+	// They keep their own state: no cardinal rotation on top.
+	if len(bp.AddedBlockStates()) != 0 {
+		t.Errorf("states added: %v", bp.AddedBlockStates())
+	}
+	if !bp.HasScript() {
+		t.Fatal("no script for blocks rotated on placement")
+	}
+	if main := bp.mainScript(); !strings.HasPrefix(main, `import "./rotate_on_place.js";`) {
+		t.Errorf("main.js doesn't import the placement script: %q", main)
+	}
+	script := placementScript(bp.placeRotations)
+	for _, s := range []string{"playerPlaceBlock", `"test:spore"`, `"custom:facing_direction"`, "withState"} {
+		if !strings.Contains(script, s) {
+			t.Errorf("placement script lacks %s", s)
+		}
+	}
+
+	// A state that isn't a rotation is left alone.
+	other := New("test")
+	other.AddBlock(protocol.BlockEntry{Name: "test:lamp", Properties: map[string]any{
+		"permutations": []any{
+			map[string]any{"condition": "q.block_state('test:lit') == 0", "components": map[string]any{}},
+			map[string]any{"condition": "q.block_state('test:lit') == 1", "components": map[string]any{}},
+		},
+	}})
+	if len(other.placeRotations) != 0 || other.HasScript() {
+		t.Errorf("test:lamp taken for a rotating block: %+v", other.placeRotations)
+	}
+}
+
+func TestManifest(t *testing.T) {
+	bp := New("test")
+	if bp.Manifest.Header.MinimumGameVersion != MinEngineVersion {
+		t.Errorf("min_engine_version %v, want %v for block traits", bp.Manifest.Header.MinimumGameVersion, MinEngineVersion)
+	}
+	bp.AddDependency("a", [3]int{1, 0, 0})
+	bp.AddDependency("a", [3]int{1, 0, 0})
+	if len(bp.Manifest.Dependencies) != 1 {
+		t.Errorf("dependency added twice: %v", bp.Manifest.Dependencies)
 	}
 }
