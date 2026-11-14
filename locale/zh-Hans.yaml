@@ -559,8 +559,6 @@ skin_geometry_write_failed:
 # Worlds
 worlds_hive_detected:
   other: "The Hive：羊会保存为 hive:text，并保留它的 NPC 玩家"
-worlds_hive_detected_packs:
-  other: "The Hive（根据它的资源包）：羊会保存为 hive:text，并保留它的 NPC 玩家"
 worlds_recording_ui:
   other: "正在把菜单和计分板录制到行为包的脚本中"
 worlds_excluding:

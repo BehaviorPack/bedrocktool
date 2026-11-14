@@ -559,8 +559,6 @@ skin_geometry_write_failed:
 # Worlds
 worlds_hive_detected:
   other: "The Hive: ヒツジは hive:text として保存し、NPC プレイヤーは残します"
-worlds_hive_detected_packs:
-  other: "The Hive(リソースパックで判定): ヒツジは hive:text として保存し、NPC プレイヤーは残します"
 worlds_recording_ui:
   other: "メニューとスコアボードをビヘイビアパックのスクリプトに記録中"
 worlds_excluding:

@@ -559,8 +559,6 @@ skin_geometry_write_failed:
 # Worlds
 worlds_hive_detected:
   other: "The Hive: 양은 hive:text로 저장하고, NPC 플레이어는 남겨 둡니다"
-worlds_hive_detected_packs:
-  other: "The Hive (리소스 팩으로 판단): 양은 hive:text로 저장하고, NPC 플레이어는 남겨 둡니다"
 worlds_recording_ui:
   other: "메뉴와 점수판을 비헤이비어 팩 스크립트에 기록하는 중"
 worlds_excluding:

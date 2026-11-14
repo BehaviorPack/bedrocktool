@@ -571,8 +571,6 @@ skin_geometry_write_failed:
 # Worlds
 worlds_hive_detected:
   other: "The Hive: owce są zapisywane jako hive:text, a jego gracze NPC są zachowywani"
-worlds_hive_detected_packs:
-  other: "The Hive (po jego paczkach zasobów): owce są zapisywane jako hive:text, a jego gracze NPC są zachowywani"
 worlds_recording_ui:
   other: "Nagrywanie menu i tablic wyników do skryptu paczki zachowań"
 worlds_excluding:

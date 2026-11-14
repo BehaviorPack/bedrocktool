@@ -559,8 +559,6 @@ skin_geometry_write_failed:
 # Worlds
 worlds_hive_detected:
   other: "The Hive: koyunlar hive:text olarak kaydedilir ve NPC oyuncuları korunur"
-worlds_hive_detected_packs:
-  other: "The Hive (kaynak paketlerinden): koyunlar hive:text olarak kaydedilir ve NPC oyuncuları korunur"
 worlds_recording_ui:
   other: "Menüler ve skor tabloları davranış paketinin betiğine kaydediliyor"
 worlds_excluding:

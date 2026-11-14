@@ -571,8 +571,6 @@ skin_geometry_write_failed:
 # Worlds
 worlds_hive_detected:
   other: "The Hive: овцы сохраняются как hive:text, а его NPC-игроки сохраняются"
-worlds_hive_detected_packs:
-  other: "The Hive (по его наборам ресурсов): овцы сохраняются как hive:text, а его NPC-игроки сохраняются"
 worlds_recording_ui:
   other: "Запись меню и табло в скрипт набора поведения"
 worlds_excluding:

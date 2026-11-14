@@ -565,8 +565,6 @@ skin_geometry_write_failed:
 # Worlds
 worlds_hive_detected:
   other: "The Hive : les moutons sont enregistrés en hive:text, et ses joueurs PNJ sont conservés"
-worlds_hive_detected_packs:
-  other: "The Hive (d'après ses packs de ressources) : les moutons sont enregistrés en hive:text, et ses joueurs PNJ sont conservés"
 worlds_recording_ui:
   other: "Enregistrement des menus et tableaux de score dans le script du pack de comportement"
 worlds_excluding:
