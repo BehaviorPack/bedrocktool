@@ -46,7 +46,8 @@ func TestCardinalRotationAdded(t *testing.T) {
 	traits := block["description"].(map[string]any)["traits"]
 	wantTraits := map[string]any{
 		"minecraft:placement_direction": map[string]any{
-			"enabled_states": []any{"minecraft:cardinal_direction"},
+			"enabled_states":    []any{"minecraft:cardinal_direction"},
+			"y_rotation_offset": 180.0,
 		},
 	}
 	if !reflect.DeepEqual(traits, wantTraits) {
@@ -82,6 +83,7 @@ func TestCardinalRotationMergesPermutations(t *testing.T) {
 				},
 			}},
 			"components": map[string]any{
+				"minecraft:geometry": map[string]any{"identifier": "geometry.lamp"},
 				"minecraft:transformation": map[string]any{
 					"RY": int32(1), "SX": float32(1), "SY": float32(1), "SZ": float32(1), "TY": float32(0.5),
 				},
@@ -111,11 +113,16 @@ func TestCardinalRotationMergesPermutations(t *testing.T) {
 	}
 }
 
-func TestCardinalRotationKeepsOwnRotation(t *testing.T) {
+func TestCardinalRotationSkipped(t *testing.T) {
 	for _, c := range []struct {
 		name  string
 		props map[string]any
 	}{
+		{"no geometry", map[string]any{
+			"components": map[string]any{
+				"minecraft:destructible_by_mining": map[string]any{"value": float32(1)},
+			},
+		}},
 		{"placement_direction", map[string]any{
 			"traits": []any{map[string]any{
 				"name":           "placement_direction",
@@ -150,6 +157,14 @@ func TestCardinalRotationKeepsOwnRotation(t *testing.T) {
 		}},
 	} {
 		t.Run(c.name, func(t *testing.T) {
+			if c.name != "no geometry" {
+				components, _ := c.props["components"].(map[string]any)
+				if components == nil {
+					components = map[string]any{}
+					c.props["components"] = components
+				}
+				components["minecraft:geometry"] = map[string]any{"identifier": "geometry.own"}
+			}
 			bp := New("test")
 			block := blockJSON(t, bp, protocol.BlockEntry{Name: "test:own", Properties: c.props})
 
