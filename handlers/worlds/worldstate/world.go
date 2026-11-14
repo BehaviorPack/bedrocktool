@@ -404,6 +404,17 @@ func (w *World) PlayerMove(playerPos mgl32.Vec3, entityRenderDistance float32, t
 	}
 }
 
+// KeepRemovedSince takes entities the server removed since t as still in
+// the world, so entity culling keeps them: when we leave a world, the
+// server removes everything in it, wherever it was.
+func (w *World) KeepRemovedSince(t time.Time) {
+	for _, ent := range w.memState.entities {
+		if ent.DeletedDistance > 0 && !ent.DeletedAt.Before(t) {
+			ent.DeletedDistance = -1
+		}
+	}
+}
+
 func entityCull(ent *entity.Entity, entityRenderDistance float32, diffOut *float32) bool {
 	if ent.DeletedDistance > 0 && entityRenderDistance != 0 {
 		diff := math.Abs(float64(ent.DeletedDistance - entityRenderDistance))

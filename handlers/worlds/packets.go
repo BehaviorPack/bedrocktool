@@ -143,6 +143,11 @@ func (w *worldsHandler) packetHandlerPreLogin(_pk packet.Packet, timeReceived ti
 	return _pk, nil
 }
 
+// worldLeaveRemovals is how long before a ChangeDimension the server's
+// RemoveActor packets are taken as it clearing the world we leave rather
+// than entities dying (Hive sends them within half a second).
+const worldLeaveRemovals = time.Second
+
 func (w *worldsHandler) packetHandlerIngame(_pk packet.Packet, toServer bool, timeReceived time.Time) (packet.Packet, error) {
 	switch pk := _pk.(type) {
 	case *packet.RequestChunkRadius:
@@ -164,6 +169,13 @@ func (w *worldsHandler) packetHandlerIngame(_pk packet.Packet, toServer bool, ti
 	// chunk
 
 	case *packet.ChangeDimension:
+		// Leaving a world, the server takes away every entity in it first:
+		// those are still there, not dead.
+		w.currentWorld(func(world *worldstate.World) {
+			if world != nil {
+				world.KeepRemovedSince(timeReceived.Add(-worldLeaveRemovals))
+			}
+		})
 		dim, _ := world.DimensionByID(int(pk.Dimension))
 		w.SaveAndReset(false, dim)
 		w.currentWorld(func(world *worldstate.World) {
@@ -368,6 +380,7 @@ func (w *worldsHandler) packetHandlerIngame(_pk packet.Packet, toServer bool, ti
 				} else {
 					ent.DeletedDistance = dist3d
 				}
+				ent.DeletedAt = timeReceived
 				w.onEntityUpdate(ent, nil, nil)
 				return nil
 			})
