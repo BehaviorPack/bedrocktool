@@ -741,9 +741,11 @@ friend_world_timeout:
   other: "好友的世界在 {{.Seconds}} 秒内没有让你进入。世界可能已关闭，或不再允许好友加入。"
 # Merged dimensions (-merge-dimensions) and render -dimension
 opt_worlds_merge_dimensions:
-  other: "合并为一个世界"
+  other: "将所有世界合并为一个"
 desc_worlds_merge_dimensions:
-  other: "将第一个之后的每个世界保存为第一个世界的自定义维度，并附带用于在它们之间穿梭的包（需要 Minecraft 1.26.30 或更高版本）"
+  other: "服务器把你送到其他世界（大厅、游戏地图）时，将它们保存为一个带自定义维度的世界，而不是 world-1、world-2… 等单独的文件（需要 Minecraft 1.26.30 或更高版本）"
+gui_worlds_merge_tip:
+  other: "这些已保存为单独的世界。在设置中打开“将所有世界合并为一个”，即可得到一个带自定义维度的世界；也可以开启此选项后重新回放录制。"
 worlds_merge_on:
   other: "第一个之后的世界将作为自定义维度合并到其中"
 worlds_merging_dimension:

@@ -739,9 +739,11 @@ friend_world_timeout:
   other: "The friend's world didn't let you in within {{.Seconds}} seconds. They may have left it or stopped letting friends join."
 # Merged dimensions (-merge-dimensions) and render -dimension
 opt_worlds_merge_dimensions:
-  other: "Merge into one world"
+  other: "Merge all worlds into one"
 desc_worlds_merge_dimensions:
-  other: "Save every world after the first as a custom dimension of the first, with a pack to travel between them (Minecraft 1.26.30 or newer)"
+  other: "When the server sends you to other worlds (lobbies, game maps), save them all as one world with custom dimensions instead of separate world-1, world-2… files (Minecraft 1.26.30 or newer)"
+gui_worlds_merge_tip:
+  other: "These were saved as separate worlds. Turn on \"Merge all worlds into one\" in the settings to get them as one world with custom dimensions, or replay the capture with it on."
 worlds_merge_on:
   other: "Worlds after the first will be merged into it as custom dimensions"
 worlds_merging_dimension:
