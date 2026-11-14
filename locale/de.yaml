@@ -557,8 +557,6 @@ skin_geometry_write_failed:
 # Worlds
 worlds_hive_detected:
   other: "The Hive: Schafe werden als hive:text gespeichert, und die NPC-Spieler bleiben erhalten"
-worlds_hive_detected_packs:
-  other: "The Hive (an den Ressourcenpaketen erkannt): Schafe werden als hive:text gespeichert, und die NPC-Spieler bleiben erhalten"
 worlds_recording_ui:
   other: "Menüs und Anzeigetafeln werden im Skript des Verhaltenspakets aufgezeichnet"
 worlds_excluding:

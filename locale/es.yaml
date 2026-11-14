@@ -563,8 +563,6 @@ skin_geometry_write_failed:
 # Worlds
 worlds_hive_detected:
   other: "The Hive: las ovejas se guardan como hive:text, y se conservan sus jugadores NPC"
-worlds_hive_detected_packs:
-  other: "The Hive (por sus paquetes de recursos): las ovejas se guardan como hive:text, y se conservan sus jugadores NPC"
 worlds_recording_ui:
   other: "Grabando menús y marcadores en el script del paquete de comportamiento"
 worlds_excluding:

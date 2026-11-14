@@ -557,8 +557,6 @@ skin_geometry_write_failed:
 # Worlds
 worlds_hive_detected:
   other: "The Hive: sheep are saved as hive:text, and its NPC players are kept"
-worlds_hive_detected_packs:
-  other: "The Hive (by its resource packs): sheep are saved as hive:text, and its NPC players are kept"
 worlds_recording_ui:
   other: "Recording menus and scoreboards into the behavior pack's script"
 worlds_excluding:
