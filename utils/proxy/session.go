@@ -858,6 +858,12 @@ func (s *Session) serverPrePlayHandler(conn *minecraft.Conn, pk packet.Packet, t
 	return false, nil
 }
 
+// replayDirection is a connection replaying a capture, which holds the
+// packets of both sides.
+type replayDirection interface {
+	LastPacketToServer() bool
+}
+
 func (s *Session) proxyLoop(ctx context.Context, toServer bool) (err error) {
 	var c1, c2 minecraft.IConn
 	if toServer {
@@ -882,12 +888,23 @@ func (s *Session) proxyLoop(ctx context.Context, toServer bool) (err error) {
 		}
 		s.lastPacketTime.Store(&timeReceived)
 
+		// A replay gives the recorded player's packets along with the
+		// server's: they're handled as from the client, as they were live,
+		// and never sent on to a client that joined the replay.
+		toServer := toServer
+		fromRecordedClient := false
+		if r, ok := c1.(replayDirection); ok && !toServer && r.LastPacketToServer() {
+			toServer, fromRecordedClient = true, true
+		}
+
 		pkName := reflect.TypeOf(pk).String()
 
 		var forward = pk
 		var process = true
 
-		if !toServer {
+		if fromRecordedClient {
+			forward = nil
+		} else if !toServer {
 			forward, process, err = s.blobPacketsFromServer(pk, timeReceived, false)
 			if err != nil {
 				return err
