@@ -566,6 +566,13 @@ func (w *worldsHandler) entityInfo(rid uint64) (typeID, nameTag string, ok bool)
 			}
 			return nil
 		})
+		// A player (Hive's NPCs are players) is saved as an entity of its
+		// own type, which the saved world's menus are opened from.
+		if ok && typeID == worldstate.PlayerEntityType {
+			if id, found := world.PlayerUUID(rid); found {
+				typeID = worldstate.PlayerEntityID(id)
+			}
+		}
 	})
 	return
 }

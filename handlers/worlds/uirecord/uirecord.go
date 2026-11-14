@@ -103,8 +103,13 @@ func (r *Recorder) OnPacket(pk packet.Packet, toServer bool, now time.Time) {
 	// looked up before taking the lock: entityInfo takes the world's locks
 	var entityTrigger string
 	if it, ok := pk.(*packet.InventoryTransaction); ok && toServer && r.entityInfo != nil {
-		if td, ok := it.TransactionData.(*protocol.UseItemOnEntityTransactionData); ok && td.ActionType == protocol.UseItemOnEntityActionInteract {
-			if typeID, nameTag, ok := r.entityInfo(td.TargetEntityRuntimeID); ok {
+		// Hive's NPCs open their menus on a hit as well as on interaction
+		// (Hive Recode opens them on both too).
+		if td, ok := it.TransactionData.(*protocol.UseItemOnEntityTransactionData); ok && (td.ActionType == protocol.UseItemOnEntityActionInteract || td.ActionType == protocol.UseItemOnEntityActionAttack) {
+			// An unnamed vanilla mob can't stand for one NPC: Hive's are
+			// invisible sheep hitboxes, which aren't saved, and every other
+			// sheep would open the menu.
+			if typeID, nameTag, ok := r.entityInfo(td.TargetEntityRuntimeID); ok && (nameTag != "" || !strings.HasPrefix(typeID, "minecraft:")) {
 				entityTrigger = typeID + "|" + nameTag
 			}
 		}
@@ -409,10 +414,16 @@ world.afterEvents.itemUse.subscribe((ev) => {
   if (key) system.run(() => showForm(ev.source, key));
 });
 
-world.afterEvents.playerInteractWithEntity.subscribe((ev) => {
-  const t = ev.target;
+function entityForm(player, t) {
   const key = ENTITY_TRIGGERS[t.typeId + "|" + (t.nameTag ?? "")] ?? ENTITY_TRIGGERS[t.typeId + "|"];
-  if (key) system.run(() => showForm(ev.player, key));
+  if (key) system.run(() => showForm(player, key));
+}
+
+world.afterEvents.playerInteractWithEntity.subscribe((ev) => entityForm(ev.player, ev.target));
+
+// Hive's NPCs open their menus when hit, too.
+world.afterEvents.entityHitEntity.subscribe((ev) => {
+  if (ev.damagingEntity?.typeId === "minecraft:player") entityForm(ev.damagingEntity, ev.hitEntity);
 });
 
 system.afterEvents.scriptEventReceive.subscribe((ev) => {
