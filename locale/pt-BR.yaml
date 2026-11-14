@@ -565,8 +565,6 @@ skin_geometry_write_failed:
 # Worlds
 worlds_hive_detected:
   other: "The Hive: as ovelhas são salvas como hive:text, e os jogadores NPC são mantidos"
-worlds_hive_detected_packs:
-  other: "The Hive (pelos pacotes de recursos): as ovelhas são salvas como hive:text, e os jogadores NPC são mantidos"
 worlds_recording_ui:
   other: "Gravando menus e placares no script do pacote de comportamento"
 worlds_excluding:
