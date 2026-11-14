@@ -158,7 +158,7 @@ func (w *World) storeMemToProvider() error {
 			LDBOptions: &opt.Options{
 				Compression: opt.DefaultCompression,
 			},
-			Blocks: withAddedStates(w.BlockRegistry, w.AddedBlockStates),
+			Blocks: WithAddedStates(w.BlockRegistry, w.AddedBlockStates),
 		}.Open(w.Folder)
 		if err != nil {
 			return err
@@ -502,7 +502,7 @@ func (w *World) Rename(name, folder string) error {
 			LDBOptions: &opt.Options{
 				Compression: opt.DefaultCompression,
 			},
-			Blocks: withAddedStates(w.BlockRegistry, w.AddedBlockStates),
+			Blocks: WithAddedStates(w.BlockRegistry, w.AddedBlockStates),
 		}.Open(folder)
 		if err != nil {
 			return err

@@ -60,6 +60,10 @@ type serverState struct {
 
 	biomes *world.BiomeRegistry
 	blocks world.BlockRegistry
+	// diskBlocks is blocks, saving the states the behavior pack adds
+	// (cardinal rotation). Chunks from the server are decoded with it, as
+	// a chunk is written to disk with the registry it was decoded with.
+	diskBlocks world.BlockRegistry
 
 	behaviorPack *behaviourpack.Pack
 	resourcePack *resourcepack.Pack
