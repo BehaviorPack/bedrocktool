@@ -58,7 +58,7 @@ updated:
 
 # Worlds (log and in-game)
 worldname_set:
-  other: "worldName ist jetzt {{.Name}}"
+  other: "Weltname ist jetzt {{.Name}}"
 void_generator_true:
   other: "Void-Generator wird verwendet"
 zoom_level:
@@ -389,7 +389,7 @@ opt_proxy_client_cache:
 desc_proxy_client_cache:
   other: "Minecraft Chunks zwischenspeichern lassen, damit sie schneller laden"
 opt_proxy_listen:
-  other: "Lauschadresse"
+  other: "Adresse für den Proxy"
 desc_proxy_listen:
   other: "Wo Minecraft dem Proxy beitritt, z. B. :19133 für einen anderen Port"
 opt_skins_filter:
