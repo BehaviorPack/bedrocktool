@@ -182,7 +182,6 @@ func (w *worldsHandler) onSessionStart(session *proxy.Session, serverName string
 		playerSkins:          make(map[uuid.UUID]*protocol.Skin),
 		playerXUIDs:          make(map[uuid.UUID]string),
 		scriptPlayerKeep:     make(map[uuid.UUID]bool),
-		isHive:               isHiveServer(session.ServerAddress(), serverName),
 		knownMaps:            make(map[int64]*worldstate.Map),
 		requestedMaps:        make(map[int64]struct{}),
 		biomes:               world.DefaultBiomes.Clone(),
@@ -197,10 +196,6 @@ func (w *worldsHandler) onSessionStart(session *proxy.Session, serverName string
 	}
 
 	w.mapUI = NewMapUI(w)
-	if w.serverState.isHive {
-		w.log.Info(locale.Loc("worlds_hive_detected", nil))
-	}
-
 	w.uiRecorder = nil
 	if w.settings.RecordUI {
 		w.uiRecorder = uirecord.New(w.entityInfo)
@@ -529,13 +524,10 @@ func (w *worldsHandler) openWorldState() {
 
 	w.worldState.BiomeRegistry = w.serverState.biomes
 	w.worldState.BlockRegistry = w.serverState.blocks
+	w.worldState.AddedBlockStates = w.serverState.behaviorPack.AddedBlockStates()
 	w.worldState.ResourcePacks = w.session.Server.ResourcePacks()
 	w.worldState.UseHashedRids = w.serverState.useHashedRids
 	w.worldState.OnMapSeen = w.onMapSeen
-	if !w.serverState.isHive && hasHivePacks(w.worldState.ResourcePacks) {
-		w.serverState.isHive = true
-		w.log.Info(locale.Loc("worlds_hive_detected_packs", nil))
-	}
 	w.worldState.Open(w.defaultWorldName(), folder)
 }
 

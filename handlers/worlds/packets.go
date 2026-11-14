@@ -47,6 +47,10 @@ func (w *worldsHandler) packetHandlerPreLogin(_pk packet.Packet, timeReceived ti
 		if !w.serverState.haveStartGame {
 			w.serverState.haveStartGame = true
 			w.serverState.useHashedRids = pk.UseBlockNetworkIDHashes
+			w.serverState.isHive = isHiveGameVersion(pk.GameVersion)
+			if w.serverState.isHive {
+				w.log.Info(locale.Loc("worlds_hive_detected", nil))
+			}
 
 			var haveGameRule = false
 			for i, gameRule := range pk.GameRules {

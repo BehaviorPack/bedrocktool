@@ -27,6 +27,10 @@ type Pack struct {
 	scriptDescription string
 	// files are other files of the pack, by path (e.g. dimensions/x.json).
 	files map[string][]byte
+
+	// addedStates is the block states added to what the server sent
+	// (cardinal rotation), so saved blocks can carry them.
+	addedStates map[string]map[string]any
 }
 
 // ScriptModule is a Script API module a pack's script depends on.
@@ -92,6 +96,8 @@ func New(name string) *Pack {
 		blocks:   make(map[string]*BlockBehaviour),
 		items:    make(map[string]*itemBehaviour),
 		entities: make(map[string]*entityBehaviour),
+
+		addedStates: make(map[string]map[string]any),
 	}
 }
 
