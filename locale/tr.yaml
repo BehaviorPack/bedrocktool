@@ -389,9 +389,9 @@ opt_proxy_client_cache:
 desc_proxy_client_cache:
   other: "Minecraft'ın chunk'ları önbelleğe almasına izin ver, böylece daha hızlı yüklenir"
 opt_proxy_listen:
-  other: "Dinleme adresi"
+  other: "Proxy adresi"
 desc_proxy_listen:
-  other: "Minecraft'ın proxy'ye katıldığı yer, ör. başka bir port için :19133"
+  other: "Minecraft'ın proxy'ye bağlandığı adres, ör. başka bir port için :19133"
 opt_skins_filter:
   other: "Ad filtresi"
 desc_skins_filter:
@@ -751,7 +751,7 @@ worlds_merging_dimension:
 worlds_merged_dimension:
   other: "{{.Name}}, {{.File}} içine {{.Dimension}} olarak birleştirildi; oraya {{.Command}} ile ışınlan"
 worlds_merge_requirements:
-  other: "Özel boyutlar Minecraft Bedrock 1.26.30 veya daha yenisini gerektirir. Dünyada {{.Command}} onları listeler, {{.Command}} <ad> ışınlar; komut yoksa Beta API'ler deneyini aç"
+  other: "Özel boyutlar Minecraft Bedrock 1.26.30 veya daha yenisini gerektirir. Dünyada {{.Command}} onları listeler, {{.Command}} <ad> ışınlar; komut yoksa Beta API deneyini aç"
 worlds_merge_failed:
   other: "{{.Name}} birleştirilemedi: {{.Err}}"
 dims_pack_description:

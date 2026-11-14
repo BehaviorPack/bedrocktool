@@ -708,7 +708,7 @@ gui_remove:
 recent_title:
   other: "Недавние серверы"
 recent_empty:
-  other: "Здесь появятся серверы, с которыми вы запускаете"
+  other: "Здесь появятся серверы, которые вы запускаете"
 recent_kind_realm:
   other: "Realm"
 recent_kind_experience:

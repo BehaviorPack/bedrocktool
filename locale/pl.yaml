@@ -34,7 +34,7 @@ done:
 enter_server:
   other: "Wpisz serwer: "
 listening_on:
-  other: "Nasłuchiwanie na {{.Address}}"
+  other: "Nasłuchuję na {{.Address}}"
 connecting:
   other: "Łączenie z {{.Address}}"
 connected:
@@ -708,7 +708,7 @@ gui_remove:
 recent_title:
   other: "Ostatnie serwery"
 recent_empty:
-  other: "Tu pojawią się serwery, z którymi uruchamiasz"
+  other: "Tu pojawią się serwery, które uruchamiasz"
 recent_kind_realm:
   other: "Realm"
 recent_kind_experience:

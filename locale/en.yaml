@@ -58,7 +58,7 @@ updated:
 
 # Worlds (log and in-game)
 worldname_set:
-  other: "worldName is now {{.Name}}"
+  other: "World name is now {{.Name}}"
 void_generator_true:
   other: "Using void generator"
 zoom_level:

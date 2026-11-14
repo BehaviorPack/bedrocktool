@@ -390,9 +390,9 @@ opt_proxy_client_cache:
 desc_proxy_client_cache:
   other: "Laisser Minecraft mettre les chunks en cache pour qu'ils chargent plus vite"
 opt_proxy_listen:
-  other: "Adresse d'écoute"
+  other: "Adresse du proxy"
 desc_proxy_listen:
-  other: "Où Minecraft rejoint le proxy, ex. :19133 pour un autre port"
+  other: "Où Minecraft se connecte au proxy, ex. :19133 pour un autre port"
 opt_skins_filter:
   other: "Filtre de nom"
 desc_skins_filter:
@@ -700,7 +700,7 @@ gui_remove:
 recent_title:
   other: "Serveurs récents"
 recent_empty:
-  other: "Les serveurs avec lesquels tu démarres apparaissent ici"
+  other: "Les serveurs que tu lances apparaissent ici"
 recent_kind_realm:
   other: "Realm"
 recent_kind_experience:
