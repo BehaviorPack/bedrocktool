@@ -379,6 +379,14 @@ func (w *worldsHandler) SaveAndReset(end bool, dim world.Dimension) {
 		w.serverState.worldCounter += 1
 		w.mapUI.Reset()
 
+		if w.uiRecorder != nil {
+			// this world's scoreboard, shown in its dimension of the saved world
+			dimension := ""
+			if m := w.serverState.merge; m != nil {
+				dimension = m.scoreboardDimension(worldState.Name)
+			}
+			w.uiRecorder.FinishWorld(dimension)
+		}
 		if w.uiRecorder != nil && w.uiRecorder.HasContent() {
 			w.serverState.behaviorPack.SetScript(w.uiRecorder.Script())
 			w.serverState.formImages = w.uiRecorder.Images()
@@ -388,6 +396,8 @@ func (w *worldsHandler) SaveAndReset(end bool, dim world.Dimension) {
 		keepPlayer := w.keepPlayer()
 		playerSkins := make(map[uuid.UUID]*protocol.Skin)
 		maps.Copy(playerSkins, w.serverState.playerSkins)
+		xuids := maps.Clone(w.serverState.playerXUIDs)
+		npcPlayer := func(id uuid.UUID) bool { return isNPCPlayer(xuids, id) }
 
 		// merged worlds are saved one after another, in order
 		var prev, done chan struct{}
@@ -402,7 +412,7 @@ func (w *worldsHandler) SaveAndReset(end bool, dim world.Dimension) {
 			if done != nil {
 				defer close(done)
 			}
-			err := w.saveWorldState(worldState, w.session.Player, w.serverState.behaviorPack, keepPlayer, playerSkins, prev)
+			err := w.saveWorldState(worldState, w.session.Player, w.serverState.behaviorPack, keepPlayer, npcPlayer, playerSkins, prev)
 			if err != nil {
 				w.log.Error(err)
 			}
@@ -422,7 +432,7 @@ func (w *worldsHandler) SaveAndReset(end bool, dim world.Dimension) {
 	}
 }
 
-func (w *worldsHandler) saveWorldState(worldState *worldstate.World, player proxy.Player, behaviorPack *behaviourpack.Pack, keepPlayer func(uuid.UUID) bool, playerSkins map[uuid.UUID]*protocol.Skin, prevSave <-chan struct{}) error {
+func (w *worldsHandler) saveWorldState(worldState *worldstate.World, player proxy.Player, behaviorPack *behaviourpack.Pack, keepPlayer, npcPlayer func(uuid.UUID) bool, playerSkins map[uuid.UUID]*protocol.Skin, prevSave <-chan struct{}) error {
 	text := locale.Locm("saving_world", locale.Strmap{"Name": worldState.Name}, len(worldState.StoredChunks))
 	w.log.Info(text)
 	w.session.SendMessage(text)
@@ -438,6 +448,7 @@ func (w *worldsHandler) saveWorldState(worldState *worldstate.World, player prox
 		w.settings.ExcludedMobs,
 		worldstate.SaveOptions{
 			KeepPlayer:  keepPlayer,
+			NPCPlayer:   npcPlayer,
 			PlayerSkins: playerSkins,
 			Hive:        w.serverState.isHive,
 			KnownMaps:   w.knownMapsSnapshot(),

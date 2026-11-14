@@ -531,7 +531,10 @@ var errFinished = errors.New("finished")
 type SaveOptions struct {
 	// KeepPlayer says which other players are saved (as entities drawn with
 	// their skins); nil saves none.
-	KeepPlayer  func(uuid.UUID) bool
+	KeepPlayer func(uuid.UUID) bool
+	// NPCPlayer says which players the server made up (Hive's NPCs): they
+	// stand where they were put, without gravity, so they don't fall.
+	NPCPlayer   func(uuid.UUID) bool
 	PlayerSkins map[uuid.UUID]*protocol.Skin
 	// Hive turns sheep into hive:text, as Hive's pack does.
 	Hive bool
@@ -546,7 +549,7 @@ type SaveOptions struct {
 // playerNPCComponents make a saved player like the game's player, without
 // moving on its own: its family (so player-only seats and filters take
 // it), its name always shown, hidden when invisible, gravity and collision,
-// and 20 health it can lose.
+// and 20 health it can lose. NPC players get npcPlayerComponents instead.
 var playerNPCComponents = map[string]any{
 	"minecraft:type_family":              map[string]any{"family": []string{"player", "bedrocktool_player"}},
 	"minecraft:nameable":                 map[string]any{"always_show": true, "allow_name_tag_renaming": false},
@@ -555,6 +558,15 @@ var playerNPCComponents = map[string]any{
 	"minecraft:health":                   map[string]any{"value": 20, "max": 20},
 	"minecraft:persistent":               map[string]any{},
 }
+
+// npcPlayerComponents are playerNPCComponents for a player the server made
+// up (Hive's NPCs): no gravity, so one placed in the air (on a ledge, in a
+// car) stays where the server had it instead of falling.
+var npcPlayerComponents = func() map[string]any {
+	c := maps.Clone(playerNPCComponents)
+	c["minecraft:physics"] = map[string]any{"has_gravity": false, "has_collision": true}
+	return c
+}()
 
 func (w *World) Save(
 	player proxy.Player, playerData map[string]any,
@@ -600,7 +612,11 @@ func (w *World) Save(
 		var playerEntities []resourcepack.EntityPlayer
 		for _, p := range players {
 			behaviorPack.AddEntity(p.Identifier, nil, p.Metadata, nil)
-			behaviorPack.AddComponents(p.Identifier, playerNPCComponents)
+			components := playerNPCComponents
+			if opts.NPCPlayer != nil && opts.NPCPlayer(p.UUID) {
+				components = npcPlayerComponents
+			}
+			behaviorPack.AddComponents(p.Identifier, components)
 			playerEntities = append(playerEntities, p.EntityPlayer)
 		}
 		w.log.Info(locale.Locm("worlds_saving_players", nil, len(players)))
