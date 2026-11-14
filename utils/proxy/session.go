@@ -233,7 +233,23 @@ func (s *Session) ClientWritePacket(pk packet.Packet) error {
 	if s.Client == nil {
 		return nil
 	}
-	return s.Client.WritePacket(pk)
+	err := s.Client.WritePacket(pk)
+	if err != nil && s.clientLeft(err) && !errors.Is(err, net.ErrClosed) {
+		// Callers stop quietly on net.ErrClosed once the player left.
+		return fmt.Errorf("%w: %w", net.ErrClosed, err)
+	}
+	return err
+}
+
+// clientLeft says whether err came from the player's game closing its
+// connection to the proxy. gophertunnel gives net.ErrClosed, or the
+// transport's own reason once the connection is done (NetherNet's
+// "SCTP transport closed" when the game quits).
+func (s *Session) clientLeft(err error) bool {
+	if errors.Is(err, net.ErrClosed) {
+		return true
+	}
+	return s.Client != nil && s.Client.Context().Err() != nil
 }
 
 // SendMessage sends a chat message to the client
@@ -859,7 +875,7 @@ func (s *Session) proxyLoop(ctx context.Context, toServer bool) (err error) {
 
 		pk, timeReceived, err := c1.ReadPacketWithTime()
 		if err != nil {
-			if errors.Is(err, net.ErrClosed) {
+			if errors.Is(err, net.ErrClosed) || (toServer && s.clientLeft(err)) {
 				err = nil
 			}
 			return err
@@ -937,7 +953,7 @@ func (s *Session) proxyLoop(ctx context.Context, toServer bool) (err error) {
 			if err := c2.WritePacket(pk); err != nil {
 				reason := err.Error()
 				s.disconnectReason.Store(&reason)
-				if errors.Is(err, net.ErrClosed) {
+				if errors.Is(err, net.ErrClosed) || (!toServer && s.clientLeft(err)) {
 					err = nil
 				}
 				return err
