@@ -741,9 +741,11 @@ friend_world_timeout:
   other: "친구의 월드가 {{.Seconds}}초 안에 들여보내 주지 않았습니다. 월드가 닫혔거나 친구 참가가 막혔을 수 있습니다."
 # Merged dimensions (-merge-dimensions) and render -dimension
 opt_worlds_merge_dimensions:
-  other: "하나의 월드로 합치기"
+  other: "모든 월드를 하나로 합치기"
 desc_worlds_merge_dimensions:
-  other: "첫 번째 이후의 모든 월드를 첫 번째 월드의 사용자 지정 차원으로 저장하고, 그 사이를 이동하는 팩을 추가합니다 (Minecraft 1.26.30 이상)"
+  other: "서버가 다른 월드(로비, 게임 맵)로 보낼 때 world-1, world-2… 같은 별도 파일 대신 사용자 지정 차원이 있는 하나의 월드로 저장합니다 (Minecraft 1.26.30 이상)"
+gui_worlds_merge_tip:
+  other: "별도의 월드로 저장되었습니다. 설정에서 \"모든 월드를 하나로 합치기\"를 켜면 사용자 지정 차원이 있는 하나의 월드로 저장되며, 이 옵션을 켜고 녹화를 다시 재생할 수도 있습니다."
 worlds_merge_on:
   other: "첫 번째 이후의 월드는 사용자 지정 차원으로 첫 번째 월드에 합쳐집니다"
 worlds_merging_dimension:

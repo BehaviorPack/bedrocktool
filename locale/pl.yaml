@@ -757,9 +757,11 @@ friend_world_timeout:
   other: "Świat znajomego nie wpuścił cię w ciągu {{.Seconds}} s. Może gra została zamknięta albo znajomi nie mogą już dołączać."
 # Merged dimensions (-merge-dimensions) and render -dimension
 opt_worlds_merge_dimensions:
-  other: "Połącz w jeden świat"
+  other: "Połącz wszystkie światy w jeden"
 desc_worlds_merge_dimensions:
-  other: "Zapisz każdy świat po pierwszym jako własny wymiar pierwszego, z paczką do podróżowania między nimi (Minecraft 1.26.30 lub nowszy)"
+  other: "Gdy serwer przenosi cię do innych światów (lobby, mapy gier), zapisuje je wszystkie jako jeden świat z własnymi wymiarami zamiast osobnych plików world-1, world-2… (Minecraft 1.26.30 lub nowszy)"
+gui_worlds_merge_tip:
+  other: "Zapisano je jako osobne światy. Włącz „Połącz wszystkie światy w jeden” w ustawieniach, aby dostać jeden świat z własnymi wymiarami, albo odtwórz nagranie z tą opcją."
 worlds_merge_on:
   other: "Światy po pierwszym zostaną do niego dołączone jako własne wymiary"
 worlds_merging_dimension:

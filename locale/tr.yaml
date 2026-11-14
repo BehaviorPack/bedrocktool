@@ -741,9 +741,11 @@ friend_world_timeout:
   other: "Arkadaşın dünyası seni {{.Seconds}} saniye içinde içeri almadı. Dünya kapatılmış ya da arkadaşlara kapatılmış olabilir."
 # Merged dimensions (-merge-dimensions) and render -dimension
 opt_worlds_merge_dimensions:
-  other: "Tek bir dünyada birleştir"
+  other: "Tüm dünyaları birleştir"
 desc_worlds_merge_dimensions:
-  other: "İlkinden sonraki her dünyayı ilkinin özel boyutu olarak kaydet; aralarında gezmek için bir paket ekle (Minecraft 1.26.30 veya daha yenisi)"
+  other: "Sunucu seni başka dünyalara (lobiler, oyun haritaları) gönderdiğinde, hepsini world-1, world-2… gibi ayrı dosyalar yerine özel boyutları olan tek bir dünya olarak kaydeder (Minecraft 1.26.30 veya daha yenisi)"
+gui_worlds_merge_tip:
+  other: "Bunlar ayrı dünyalar olarak kaydedildi. Özel boyutları olan tek bir dünya için ayarlarda \"Tüm dünyaları birleştir\"i aç ya da kaydı bu ayarla yeniden oynat."
 worlds_merge_on:
   other: "İlkinden sonraki dünyalar ona özel boyutlar olarak birleştirilecek"
 worlds_merging_dimension:
