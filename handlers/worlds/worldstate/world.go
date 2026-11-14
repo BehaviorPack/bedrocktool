@@ -825,6 +825,8 @@ func (w *World) finalizeProvider(
 	if w.VoidGen {
 		ld.FlatWorldLayers = `{"biome_id":1,"block_layers":[{"block_data":0,"block_id":0,"count":1},{"block_data":0,"block_id":0,"count":2},{"block_data":0,"block_id":0,"count":1}],"encoding_version":3,"structure_options":null}`
 		ld.Generator = 2
+		// No mobs spawning into a void world, whatever the server had.
+		ld.DoMobSpawning = false
 	}
 
 	ld.RandomTickSpeed = 0
@@ -836,9 +838,6 @@ func (w *World) finalizeProvider(
 		s.Time += ticksSince
 		s.TimeCycle = true
 	}
-
-	// No mobs spawning into a saved map, whatever the server had.
-	ld.DoMobSpawning = false
 
 	if experimental {
 		if ld.Experiments == nil {

@@ -165,7 +165,6 @@ func (w *worldsHandler) onSessionStart(session *proxy.Session, serverName string
 		dimensions:           make(map[int]protocol.DimensionDefinition),
 		playerSkins:          make(map[uuid.UUID]*protocol.Skin),
 		playerXUIDs:          make(map[uuid.UUID]string),
-		isHive:               isHiveServer(session.ServerAddress(), serverName),
 		knownMaps:            make(map[int64]*worldstate.Map),
 		requestedMaps:        make(map[int64]struct{}),
 		biomes:               world.DefaultBiomes.Clone(),
@@ -176,9 +175,6 @@ func (w *worldsHandler) onSessionStart(session *proxy.Session, serverName string
 	}
 
 	w.mapUI = NewMapUI(w)
-	if w.serverState.isHive {
-		w.log.Info("The Hive: sheep are saved as hive:text, and its NPC players are kept")
-	}
 
 	w.scripting = nil
 	if w.settings.Script != "" {
@@ -453,10 +449,6 @@ func (w *worldsHandler) openWorldState() {
 	w.worldState.ResourcePacks = w.session.Server.ResourcePacks()
 	w.worldState.UseHashedRids = w.serverState.useHashedRids
 	w.worldState.OnMapSeen = w.onMapSeen
-	if !w.serverState.isHive && hasHivePacks(w.worldState.ResourcePacks) {
-		w.serverState.isHive = true
-		w.log.Info("The Hive (by its resource packs): sheep are saved as hive:text, and its NPC players are kept")
-	}
 	w.worldState.Open(w.defaultWorldName(), folder)
 }
 
