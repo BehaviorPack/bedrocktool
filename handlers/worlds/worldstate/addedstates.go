@@ -16,9 +16,11 @@ type addedStatesRegistry struct {
 	added map[string]map[string]any
 }
 
-// withAddedStates wraps reg so blocks in added are saved with their extra
-// states. It returns reg as is when there are none.
-func withAddedStates(reg world.BlockRegistry, added map[string]map[string]any) world.BlockRegistry {
+// WithAddedStates wraps reg so blocks in added are saved with their extra
+// states. It returns reg as is when there are none. Chunks are written to
+// disk with the registry they were decoded with, so chunks from the server
+// must be decoded with this one for the states to be saved.
+func WithAddedStates(reg world.BlockRegistry, added map[string]map[string]any) world.BlockRegistry {
 	if reg == nil || len(added) == 0 {
 		return reg
 	}
