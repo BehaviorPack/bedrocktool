@@ -114,10 +114,12 @@ func New(name string) *Pack {
 	}
 }
 
-// MinEngineVersion is the pack's min_engine_version. Its blocks are written
-// in a 1.26 format with traits (placement_direction), which the game only
-// applies for packs made for a version that has them, as add-ons do.
-var MinEngineVersion = resource.Version{1, 26, 0}
+// MinEngineVersion is the pack's min_engine_version: new enough for block
+// traits (placement_direction, 1.20.20), and the version the pack's scripts
+// (recorded menus, placement) have always run with on @minecraft/server
+// 1.x (DefaultScriptModules). Newer versions want 2.x script modules, and
+// the menus' script stopped loading with 1.26.0.
+var MinEngineVersion = resource.Version{1, 21, 50}
 
 func (bp *Pack) AddDependency(id string, ver resource.Version) {
 	for _, d := range bp.Manifest.Dependencies {

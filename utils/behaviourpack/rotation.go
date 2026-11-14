@@ -195,6 +195,8 @@ func placementScript(blocks map[string]*placeRotation) string {
 // they were saved from: block id -> {state, yaw: {degrees: value}, axis: {x|y|z: value}}.
 const rotations = ` + string(table) + `;
 
+// main.js imports this first: nothing here may stop the rest from loading.
+try {
 world.afterEvents.playerPlaceBlock.subscribe(({ block, player }) => {
   const r = rotations[block.typeId];
   if (!r) return;
@@ -215,5 +217,8 @@ world.afterEvents.playerPlaceBlock.subscribe(({ block, player }) => {
     console.warn("rotate " + block.typeId + ": " + e);
   }
 });
+} catch (e) {
+  console.warn("rotate on place: " + e);
+}
 `
 }
