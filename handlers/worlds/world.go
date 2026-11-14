@@ -64,6 +64,9 @@ type serverState struct {
 	// (cardinal rotation). Chunks from the server are decoded with it, as
 	// a chunk is written to disk with the registry it was decoded with.
 	diskBlocks world.BlockRegistry
+	// formImages is the recorded forms' URL images (url -> texture path)
+	// when the menu recorder's script was last put in the pack.
+	formImages map[string]string
 
 	behaviorPack *behaviourpack.Pack
 	resourcePack *resourcepack.Pack
@@ -378,6 +381,7 @@ func (w *worldsHandler) SaveAndReset(end bool, dim world.Dimension) {
 
 		if w.uiRecorder != nil && w.uiRecorder.HasContent() {
 			w.serverState.behaviorPack.SetScript(w.uiRecorder.Script())
+			w.serverState.formImages = w.uiRecorder.Images()
 		}
 
 		// taken now: the packet loop keeps changing these while it saves
@@ -437,6 +441,7 @@ func (w *worldsHandler) saveWorldState(worldState *worldstate.World, player prox
 			PlayerSkins: playerSkins,
 			Hive:        w.serverState.isHive,
 			KnownMaps:   w.knownMapsSnapshot(),
+			FormImages:  w.serverState.formImages,
 		},
 		w.session.Server.GameData(), w.serverState.serverName,
 		w.settings.EntityCulling,

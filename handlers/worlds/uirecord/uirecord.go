@@ -10,6 +10,9 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"net/url"
+	"path"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -317,6 +320,9 @@ func (r *Recorder) Script() string {
 	sb.WriteString("//   /scriptevent bedrocktool:form <key>\n\n")
 	sb.WriteString(scriptHeader)
 	fmt.Fprintf(&sb, "const FORMS = %s;\n\n", js(forms))
+	// Scripts only show images from texture paths: images the server gave
+	// as URLs are saved in the world's resource pack at these paths.
+	fmt.Fprintf(&sb, "const IMAGES = %s;\n\n", js(r.imagesLocked()))
 	fmt.Fprintf(&sb, "const NEXT = %s;\n\n", js(r.next))
 	fmt.Fprintf(&sb, "const ITEM_TRIGGERS = %s;\n\n", js(r.items))
 	fmt.Fprintf(&sb, "const ENTITY_TRIGGERS = %s;\n\n", js(r.entities))
@@ -341,7 +347,7 @@ function build(f) {
     case "form": {
       const form = new ActionFormData().title(text(f.title)).body(text(f.content));
       for (const b of f.buttons ?? []) {
-        const icon = b.image && b.image.type === "path" ? b.image.data : undefined;
+        const icon = !b.image ? undefined : b.image.type === "path" ? b.image.data : IMAGES[b.image.data];
         form.button(text(b.text), icon);
       }
       return form;
@@ -443,3 +449,50 @@ system.run(() => {
   world.setDynamicProperty("bedrocktool:scoreboards", true);
 });
 `
+
+// imagePathChars is what a texture path may hold.
+var imagePathChars = regexp.MustCompile(`^[A-Za-z0-9_\-./]+$`)
+
+// ImagePath is where an image a form button shows from a URL goes in the
+// saved world's resource pack, as a texture path without extension: the
+// URL's path, so Hive's https://cdn.playhive.com/icons/locker/x.png is
+// icons/locker/x, the layout Hive Recode's pack uses for the same images.
+func ImagePath(rawURL string) (string, bool) {
+	u, err := url.Parse(rawURL)
+	if err != nil || (u.Scheme != "https" && u.Scheme != "http") || u.Host == "" {
+		return "", false
+	}
+	p := path.Clean("/" + u.Path)[1:]
+	p = strings.TrimSuffix(p, path.Ext(p))
+	if p == "" || strings.Contains(p, "..") || !imagePathChars.MatchString(p) {
+		return "", false
+	}
+	return p, true
+}
+
+// Images is the image URLs of the recorded forms' buttons, with the texture
+// path (ImagePath) each is shown from in the saved world.
+func (r *Recorder) Images() map[string]string {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	return r.imagesLocked()
+}
+
+func (r *Recorder) imagesLocked() map[string]string {
+	images := make(map[string]string)
+	for _, f := range r.forms {
+		buttons, _ := f.Data["buttons"].([]any)
+		for _, b := range buttons {
+			bm, _ := b.(map[string]any)
+			img, _ := bm["image"].(map[string]any)
+			if img == nil || img["type"] != "url" {
+				continue
+			}
+			u, _ := img["data"].(string)
+			if p, ok := ImagePath(u); ok {
+				images[u] = p
+			}
+		}
+	}
+	return images
+}

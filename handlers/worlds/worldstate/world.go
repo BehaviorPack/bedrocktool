@@ -538,6 +538,9 @@ type SaveOptions struct {
 	// KnownMaps are maps received while earlier worlds were captured, added
 	// when this world's item frames or containers hold them.
 	KnownMaps map[int64]*Map
+	// FormImages are the images recorded forms show from URLs, by URL,
+	// with the texture path the pack's script shows each from.
+	FormImages map[string]string
 }
 
 // playerNPCComponents make a saved player like the game's player, without
@@ -611,6 +614,25 @@ func (w *World) Save(
 		}
 	}
 
+	// Images the recorded forms show from URLs, at the texture paths the
+	// pack's script shows them from, in a pack of their own: every world of
+	// a session has the same menus, so merged worlds share one copy.
+	var formImagePack *resourcepack.Pack
+	if len(opts.FormImages) > 0 {
+		files := fetchFormImages(context.Background(), opts.FormImages, w.log)
+		if len(files) > 0 {
+			formImagePack = resourcepack.New()
+			h := &formImagePack.Manifest.Header
+			h.Name = "bedrocktool form images"
+			h.Description = "Images the server's menus showed, for the recorded menus"
+			h.UUID = uuid.MustParse(utils.RandSeededUUID(serverName + "_form_images"))
+			formImagePack.Manifest.Modules[0].UUID = utils.RandSeededUUID(serverName + "_form_images_module")
+			formImagePack.Manifest.Modules[0].Description = h.Description
+			maps.Copy(formImagePack.Files, files)
+		}
+		w.log.Infof("form images: %d of %d saved", len(files), len(opts.FormImages))
+	}
+
 	err := w.finalizeProvider(
 		playerData,
 		excludedMobs,
@@ -651,6 +673,16 @@ func (w *World) Save(
 			headers = append(headers, addedPack{
 				BehaviorPack: false,
 				Header:       &playerResourcePack.Manifest.Header,
+			})
+		}
+
+		if formImagePack != nil {
+			if err := formImagePack.WriteToFS(utils.SubFS(fs, path.Join("resource_packs", "bedrocktool_forms"))); err != nil {
+				return nil, err
+			}
+			headers = append(headers, addedPack{
+				BehaviorPack: false,
+				Header:       &formImagePack.Manifest.Header,
 			})
 		}
 
