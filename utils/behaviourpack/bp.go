@@ -17,6 +17,10 @@ type Pack struct {
 	items    map[string]*itemBehaviour
 	entities map[string]*entityBehaviour
 	biomes   []biomeBehaviour
+
+	// addedStates is the block states added to what the server sent
+	// (cardinal rotation), so saved blocks can carry them.
+	addedStates map[string]map[string]any
 }
 
 func New(name string) *Pack {
@@ -44,6 +48,8 @@ func New(name string) *Pack {
 		blocks:   make(map[string]*BlockBehaviour),
 		items:    make(map[string]*itemBehaviour),
 		entities: make(map[string]*entityBehaviour),
+
+		addedStates: make(map[string]map[string]any),
 	}
 }
 
