@@ -264,3 +264,21 @@ func TestManifest(t *testing.T) {
 		t.Errorf("dependency added twice: %v", bp.Manifest.Dependencies)
 	}
 }
+
+// Custom entities the server sent are saved invulnerable.
+func TestEntityInvulnerable(t *testing.T) {
+	bp := New("test")
+	bp.AddEntity("hivehub:npc_questmaster", nil, nil, nil)
+	bp.AddEntity("minecraft:zombie", nil, nil, nil)
+	ds, ok := bp.entities["hivehub:npc_questmaster"].MinecraftEntity.Components["minecraft:damage_sensor"].(map[string]any)
+	if !ok {
+		t.Fatal("custom entity has no damage_sensor")
+	}
+	triggers := ds["triggers"].([]any)
+	if trig := triggers[0].(map[string]any); trig["cause"] != "all" || trig["deals_damage"] != "no" {
+		t.Errorf("damage_sensor = %v", ds)
+	}
+	if _, ok := bp.entities["minecraft:zombie"]; ok {
+		t.Error("vanilla entity defined")
+	}
+}
