@@ -24,15 +24,22 @@ var cardinalRotations = []struct {
 // state the server never sent: the trait's default.
 const cardinalDefault = "north"
 
+// cardinalYOffset turns the placement direction around, so a placed block's
+// front faces the player while north (what saved blocks get) stays
+// unrotated, as the server showed them.
+const cardinalYOffset = 180
+
 // addCardinalRotation lets a block be placed facing north, east, south or
 // west: it enables minecraft:cardinal_direction with the placement_direction
 // trait and adds a permutation rotating the block for each direction. It
-// leaves alone a block that already rotates (a placement trait, or
-// permutations on cardinal_direction or facing_direction), one whose
-// permutations set their own transformation, and one whose format is too old
-// for traits. It says whether it added the rotation.
+// leaves alone a block without minecraft:geometry (a cube textured by
+// blocks.json, which a transformation doesn't turn), one that already
+// rotates (a placement trait, or permutations on cardinal_direction or
+// facing_direction), one whose permutations set their own transformation,
+// and one whose format is too old for traits. It says whether it added the
+// rotation.
 func addCardinalRotation(b *MinecraftBlock, version string) bool {
-	if version < "1.20.20" {
+	if version < "1.20.20" || !hasGeometry(b) {
 		return false
 	}
 	for name := range b.Description.Traits {
@@ -58,7 +65,8 @@ func addCardinalRotation(b *MinecraftBlock, version string) bool {
 		b.Description.Traits = make(map[string]Trait)
 	}
 	b.Description.Traits["minecraft:placement_direction"] = Trait{
-		"enabled_states": []string{cardinalDirection},
+		"enabled_states":    []string{cardinalDirection},
+		"y_rotation_offset": cardinalYOffset,
 	}
 
 	base, _ := b.Components["minecraft:transformation"].(map[string][]float32)
@@ -78,4 +86,18 @@ func addCardinalRotation(b *MinecraftBlock, version string) bool {
 		})
 	}
 	return true
+}
+
+// hasGeometry says whether the block, or any of its permutations, is drawn
+// with a model of its own.
+func hasGeometry(b *MinecraftBlock) bool {
+	if _, ok := b.Components["minecraft:geometry"]; ok {
+		return true
+	}
+	for _, p := range b.Permutations {
+		if _, ok := p.Components["minecraft:geometry"]; ok {
+			return true
+		}
+	}
+	return false
 }
