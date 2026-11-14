@@ -499,6 +499,8 @@ replay_reading:
   other: "Lese Aufnahme {{.File}}"
 replay_end:
   other: "Ende der Aufnahme erreicht"
+replay_wrong_protocol:
+  other: "Diese Aufnahme wurde mit Minecraft-Protokoll {{.Protocol}} gemacht, dieses bedrocktool liest aber nur Protokoll {{.CurrentProtocol}} (Minecraft {{.CurrentVersion}}). Eine Aufnahme lässt sich nur mit einem bedrocktool für die Minecraft-Version abspielen, mit der sie gemacht wurde: Nutze die bedrocktool-Version aus dieser Zeit."
 disconnecting:
   other: "Verbindung wird getrennt"
 client_connected:
@@ -639,13 +641,13 @@ capture_confirm_title:
 capture_confirm_body:
   other: "Die .pcap2-Aufzeichnung enthält jedes Paket, das der Server während der Sitzung gesendet hat."
 capture_confirm_detail:
-  other: "Damit lässt sich die Welt jederzeit erneut speichern, ohne zum Server zurückzukehren: mit anderen Einstellungen oder mit einer künftigen Version von bedrocktool, die Fehler behebt oder Neues kann. Ohne sie ist alles, was fehlt, für immer verloren."
+  other: "Damit lässt sich die Welt jederzeit erneut speichern, ohne zum Server zurückzukehren: mit anderen Einstellungen oder mit einem bedrocktool-Update, das Fehler behebt. Eine Aufnahme lässt sich nur mit einem bedrocktool für dieselbe Minecraft-Version abspielen, mit der sie gemacht wurde, also behalte dieses bedrocktool auch. Ohne sie ist alles, was fehlt, für immer verloren."
 capture_confirm_keep:
   other: "Weiter aufzeichnen"
 capture_confirm_off:
   other: "Trotzdem ausschalten (nicht mehr anzeigen!)"
 capture_off_warning:
-  other: "Die Sitzungsaufzeichnung ist aus (-capture=false): Es gibt keine .pcap2, um diese Welt später erneut zu speichern, mit anderen Einstellungen oder einem neueren bedrocktool"
+  other: "Die Sitzungsaufzeichnung ist aus (-capture=false): Es gibt keine .pcap2, um diese Welt später erneut zu speichern, mit anderen Einstellungen oder einem bedrocktool-Update für diese Minecraft-Version"
 anti_cheat_notice:
   other: "Ein Hinweis vor der Anmeldung: Auf Servern mit strengem Anti-Cheat (Cubecraft und The Hive sind bekannte Fälle) kann bedrocktool in seltenen Fällen dazu führen, dass das Konto markiert oder gesperrt wird. Es verbindet sich über gophertunnel, das sich nicht genau wie das echte Spiel bewegt und Eingaben sendet, daher können manche Anti-Cheats es erkennen. Nutze für diese Server ein Zweitkonto; Realms, eigene Welten und die meisten Server sind kein Problem."
 gui_auth_title:
