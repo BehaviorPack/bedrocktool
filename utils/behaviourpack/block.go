@@ -21,6 +21,11 @@ func (bp *Pack) AddBlock(block protocol.BlockEntry) {
 	} else {
 		delete(bp.addedStates, block.Name)
 	}
+	if r := findPlaceRotation(&minecraftBlock); r != nil {
+		bp.placeRotations[block.Name] = r
+	} else {
+		delete(bp.placeRotations, block.Name)
+	}
 
 	bp.blocks[block.Name] = &BlockBehaviour{
 		FormatVersion:  version,
