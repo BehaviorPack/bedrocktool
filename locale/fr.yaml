@@ -505,6 +505,8 @@ replay_reading:
   other: "Lecture du replay {{.File}}"
 replay_end:
   other: "Fin du replay atteinte"
+replay_wrong_protocol:
+  other: "Cet enregistrement a été fait avec le protocole Minecraft {{.Protocol}}, mais ce bedrocktool ne lit que le protocole {{.CurrentProtocol}} (Minecraft {{.CurrentVersion}}). Un enregistrement ne se rejoue que dans un bedrocktool pour la version de Minecraft où il a été fait : utilisez la version de bedrocktool de cette époque."
 disconnecting:
   other: "Déconnexion"
 client_connected:
@@ -648,13 +650,13 @@ capture_confirm_title:
 capture_confirm_body:
   other: "L'enregistrement .pcap2 contient chaque paquet envoyé par le serveur pendant la session."
 capture_confirm_detail:
-  other: "Grâce à lui, le monde peut être réenregistré à tout moment sans retourner sur le serveur : avec d'autres paramètres, ou avec une future version de bedrocktool qui corrige des bugs ou ajoute des fonctions. Sans lui, ce qui manque est perdu pour de bon."
+  other: "Grâce à lui, le monde peut être réenregistré à tout moment sans retourner sur le serveur : avec d'autres paramètres, ou avec une mise à jour de bedrocktool qui corrige des bugs. Un enregistrement ne se rejoue que dans un bedrocktool pour la même version de Minecraft que celle où il a été fait, alors gardez aussi ce bedrocktool. Sans lui, ce qui manque est perdu pour de bon."
 capture_confirm_keep:
   other: "Continuer l'enregistrement"
 capture_confirm_off:
   other: "Désactiver quand même (ne plus afficher !)"
 capture_off_warning:
-  other: "L'enregistrement de la session est désactivé (-capture=false) : il n'y aura pas de .pcap2 pour réenregistrer ce monde plus tard, avec d'autres paramètres ou un bedrocktool plus récent"
+  other: "L'enregistrement de la session est désactivé (-capture=false) : il n'y aura pas de .pcap2 pour réenregistrer ce monde plus tard, avec d'autres paramètres ou une mise à jour de bedrocktool pour cette version de Minecraft"
 anti_cheat_notice:
   other: "Une remarque avant de te connecter : sur les serveurs à anti-triche strict (Cubecraft et The Hive sont des cas connus), utiliser bedrocktool peut, dans de rares cas, faire signaler ou bannir le compte. Il se connecte via gophertunnel, qui ne se déplace pas et n'envoie pas les entrées exactement comme le vrai jeu, donc certains anti-triche peuvent le repérer. Pour ces serveurs, utilise un compte secondaire ; les Realms, tes propres mondes et la plupart des serveurs ne posent aucun problème."
 gui_auth_title:

@@ -505,6 +505,8 @@ replay_reading:
   other: "Leyendo la repetición {{.File}}"
 replay_end:
   other: "Se llegó al final de la repetición"
+replay_wrong_protocol:
+  other: "Esta grabación se hizo con el protocolo {{.Protocol}} de Minecraft, pero este bedrocktool solo lee el protocolo {{.CurrentProtocol}} (Minecraft {{.CurrentVersion}}). Una grabación solo se reproduce en un bedrocktool para la versión de Minecraft con la que se hizo: usa la versión de bedrocktool de esa época."
 disconnecting:
   other: "Desconectando"
 client_connected:
@@ -648,13 +650,13 @@ capture_confirm_title:
 capture_confirm_body:
   other: "La grabación .pcap2 contiene cada paquete que el servidor envió durante la sesión."
 capture_confirm_detail:
-  other: "Con ella, el mundo se puede volver a guardar en cualquier momento sin volver al servidor: con otros ajustes, o con una versión futura de bedrocktool que corrija errores o añada funciones. Sin ella, lo que falte se pierde para siempre."
+  other: "Con ella, el mundo se puede volver a guardar en cualquier momento sin volver al servidor: con otros ajustes, o con una actualización de bedrocktool que corrija errores. Una grabación solo se reproduce en un bedrocktool para la misma versión de Minecraft con la que se hizo, así que guarda también ese bedrocktool. Sin ella, lo que falte se pierde para siempre."
 capture_confirm_keep:
   other: "Seguir grabando"
 capture_confirm_off:
   other: "Desactivar de todos modos (¡no volver a mostrar!)"
 capture_off_warning:
-  other: "La grabación de la sesión está desactivada (-capture=false): no habrá un .pcap2 para volver a guardar este mundo más tarde, con otros ajustes o un bedrocktool más nuevo"
+  other: "La grabación de la sesión está desactivada (-capture=false): no habrá un .pcap2 para volver a guardar este mundo más tarde, con otros ajustes o una actualización de bedrocktool para esta versión de Minecraft"
 anti_cheat_notice:
   other: "Una nota antes de iniciar sesión: en servidores con anti-cheat estricto (Cubecraft y The Hive son casos conocidos), usar bedrocktool puede, en casos raros, hacer que la cuenta sea marcada o baneada. Se conecta mediante gophertunnel, que no se mueve ni envía la entrada exactamente como el juego real, así que algunos anti-cheats pueden distinguirlo. Para esos servidores usa una cuenta secundaria; los Realms, tus propios mundos y la mayoría de servidores no dan problemas."
 gui_auth_title:
