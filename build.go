@@ -14,9 +14,14 @@ import (
 )
 
 const (
-	AppName           = "bedrocktool"
-	AppID             = "yuv.pink.bedrocktool"
-	AndroidAPILevel   = "21"
+	AppName         = "bedrocktool"
+	AppID           = "yuv.pink.bedrocktool"
+	AndroidAPILevel = "21"
+	// AndroidPermissions are the ones Gio doesn't add itself: the
+	// foreground service that keeps a session running (SessionService),
+	// and opening the installer on an update (utils/updater).
+	AndroidPermissions = "android.permission.FOREGROUND_SERVICE,android.permission.FOREGROUND_SERVICE_SPECIAL_USE," +
+		"android.permission.POST_NOTIFICATIONS,android.permission.WAKE_LOCK,android.permission.REQUEST_INSTALL_PACKAGES"
 	GitTagExcludeExpr = "r*"
 )
 
@@ -25,14 +30,18 @@ var (
 	versionRegexp = regexp.MustCompile(`v(\d\.\d+\.\d+)(?:-(\d+)-(\w+))?`)
 )
 
-var gogioCmd string
+// gogioCmd builds the desktop GUIs. Android uses patchedGogio, built from
+// gio-cmd/ (gogio with -androidapp and -androidperms, for the app's file
+// provider and foreground service).
+var gogioCmd = "gogio"
+var patchedGogio string
 
 func init() {
 	var exeExt = ""
 	if runtime.GOOS == "windows" {
 		exeExt = ".exe"
 	}
-	gogioCmd = "./gogio" + exeExt
+	patchedGogio = "./gogio" + exeExt
 }
 
 // Build represents a specific build configuration.
@@ -337,9 +346,19 @@ func guiBuildCmd(buildTag string, build Build, ldflags, tags []string) (string, 
 		gogioCmd,
 	}
 	if build.OS == "android" {
-		buildCmd = append(buildCmd, "-target", build.OS)
+		buildCmd[0] = patchedGogio
 		buildCmd = append(buildCmd, "-appid", AppID)
-		buildCmd = append(buildCmd, "-resources", "./android-resources")
+		buildCmd = append(buildCmd, "-minsdk", AndroidAPILevel)
+		// the file provider "Open in Minecraft" hands worlds out with
+		buildCmd = append(buildCmd, "-androidapp", "./ui/gui/android/manifest-application.xml")
+		buildCmd = append(buildCmd, "-androidperms", AndroidPermissions)
+		// a fixed key, so a new build installs over the last one
+		if ks, err := os.UserHomeDir(); err == nil {
+			ks = filepath.Join(ks, ".android", "debug.keystore")
+			if _, err := os.Stat(ks); err == nil {
+				buildCmd = append(buildCmd, "-signkey", ks, "-signpass", "android")
+			}
+		}
 	}
 	tagSplit := strings.Split(strings.ReplaceAll(buildTag, "-", "."), ".")
 	tagSplit = tagSplit[:len(tagSplit)-1]
@@ -435,6 +454,14 @@ func (c *BuildConfig) doBuild(build Build) error {
 		if err != nil {
 			return err
 		}
+		// pion's github.com/wlynxg/anet (WebRTC, for NetherNet) links to
+		// net.zoneCache, which Go 1.23+ refuses by default
+		ldflags = append(ldflags, "-checklinkname=0")
+		if build.Type == "gui" {
+			if err := buildGogio(); err != nil {
+				return fmt.Errorf("building gio-cmd/gogio: %w", err)
+			}
+		}
 		switch build.Type {
 		case "lib":
 			outputPath, buildCmd = libBuildCmd(c.BuildTag, build, ldflags, tags)
@@ -482,32 +509,30 @@ func (c *BuildConfig) doBuild(build Build) error {
 	return nil
 }
 
+var gogioBuilt bool
+
+// buildGogio builds the patched gogio in gio-cmd/, its own module.
 func buildGogio() error {
-	var env []string
-	env = append(env, os.Environ()...)
+	if gogioBuilt {
+		return nil
+	}
+	env := append(os.Environ(), "GOWORK=off")
 	err := runCommand([]string{
 		"go", "build",
-		"-o", gogioCmd,
-		"-v",
+		"-o", filepath.Join("..", patchedGogio),
 		"-trimpath",
-		"./gio-cmd/gogio",
-	}, env, "")
+		"./gogio",
+	}, env, "gio-cmd")
 	if err != nil {
 		return err
 	}
+	gogioBuilt = true
 	return nil
 }
 
 func main() {
 	log.SetFlags(0)
 	log.Println("--- Starting Build Process ---")
-
-	if false {
-		if err := buildGogio(); err != nil {
-			log.Fatalf("building gogio %s", err)
-		}
-	}
-	gogioCmd = "gogio"
 
 	buildCfg := &BuildConfig{}
 
@@ -549,7 +574,7 @@ func main() {
 		// Desktop GUI builds
 		{"windows", "amd64", "gui"},
 		{"linux", "amd64", "gui"},
-		//{"android", "arm64", "gui"},
+		{"android", "arm64", "gui"},
 		{"darwin", "amd64", "gui"},
 		{"darwin", "arm64", "gui"},
 
